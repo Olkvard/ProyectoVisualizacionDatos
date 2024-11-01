@@ -13,12 +13,12 @@ df = pd.read_excel("jugadores.xlsx")
 # Crear columnas de ataque y defensa
 df["Ataque"] = ((df["Puntos Totales"] + df["Rebotes Ofensivos"] + df["Asistencias"]) / df["Minutos Jugados"]) - ((df["Tapones Recibidos"] + df["Pérdidas"]) / df["Minutos Jugados"])
 df["Defensa"] = ((df["Recuperaciones"] + df["Rebotes Defensivos"] + df["Tapones Cometidos"] + df["Faltas Personales Recibidas"]) / df["Minutos Jugados"]) - (df["Faltas Personales Cometidas"] / df["Minutos Jugados"])
-df['PER Aproximado'] = (df["TCP1 (%)"] + df["TCP2 (%)"] + df["TCP3 (%)"] + df["Ataque"] + df["Defensa"])/5
 
 # Limitar los valores de "Ataque" y "Defensa" entre 0 y 1
 df["Ataque"] = df["Ataque"].clip(0, 1)
 df["Defensa"] = df["Defensa"].clip(0, 1)
 
+df['PER Aproximado'] = (df["TCP1 (%)"] + df["TCP2 (%)"] + df["TCP3 (%)"] + df["Ataque"] + df["Defensa"])/5
 # Inicializar la aplicación
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
