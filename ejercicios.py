@@ -61,12 +61,14 @@ def radar_chart(player_names, category_labels=None):
 
     return fig
 
+top_10_jugadores = df.nlargest(10, 'PER Aproximado').sort_values(by='PER Aproximado', ascending=True)
+
 # Layout de la app
 app.layout = dbc.Container([
     html.H1("Gráfica de jugadores"),
-    dcc.Graph(figure=px.bar(df, x='Nombre', y='PER Aproximado', title="PER Aproximado de los Jugadores de Baloncesto",
+    dcc.Graph(figure=px.bar(top_10_jugadores, y='Nombre', x='PER Aproximado', title="PER Aproximado de los Jugadores de Baloncesto",
                             labels={'PER Aproximado': 'PER Aproximado', 'Nombre': 'Jugador'},
-                            color='PER Aproximado', color_continuous_scale='Blues')),
+                            color='PER Aproximado', color_continuous_scale='greens', orientation="h")),
     dcc.Dropdown(
         id='player-dropdown', 
         options=[{'label': name, 'value': name} for name in df['Nombre'].unique()],
@@ -74,7 +76,7 @@ app.layout = dbc.Container([
         placeholder="Selecciona uno o dos jugadores"
     ),
     dcc.Graph(id="radar-chart"),
-])
+], style={"backgroundColor": "#f0f0f0", "padding": "20px"})
 
 # Callback para actualizar el gráfico de radar
 @app.callback(
