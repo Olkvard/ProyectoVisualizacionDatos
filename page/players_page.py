@@ -72,7 +72,7 @@ players_page_content =dbc.Container([
         placeholder="Selecciona uno o dos jugadores"
     ),
     dcc.Graph(id="radar-chart"),
-], style={"backgroundColor": "#f0f0f0", "padding": "20px"})
+], style={"padding-top": "40px"})
 
 # Callback para actualizar el gráfico de radar
 @callback(

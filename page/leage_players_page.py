@@ -22,4 +22,4 @@ leage_players = dbc.Container([
                             labels={'PER Aproximado': 'PER Aproximado', 'Nombre': 'Jugador'},
                             color='PER Aproximado', color_continuous_scale='greens', orientation="h")),
 
-])
+],style={"padding-top": "3rem"})

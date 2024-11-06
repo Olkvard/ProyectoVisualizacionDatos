@@ -1,5 +1,5 @@
 from dash import html
-from utils.theme import theme
+import utils.theme as theme
 
 about_me_text= "Data scientist with 2+ years experience in building data-intensive applications, overcoming complex challenges in multiple industries, proficient in predictive data modeling, processing, visualizing, and extracting actionable insights from data."
 
@@ -21,7 +21,7 @@ about_page_content = html.Div(className="col-md-12 col-sm-12 col-lg-8 mb-md-0 mb
                          ]),
                 html.Div(className="card-icon d-flex align-items-end", children=[
                     html.Img(className="img-fluid",
-                             src="./assets/programmer.gif" , style={"border-radius":6})
+                             src="./assets/images/programmer.gif" , style={"border-radius":6})
                 ]
                 )
             ])

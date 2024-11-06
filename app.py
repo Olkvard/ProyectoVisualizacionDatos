@@ -1,5 +1,13 @@
 # app.py
 
+import sys
+import os
+module_path = os.path.abspath(os.path.join(
+    os.path.dirname(os.path.abspath(__file__))))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+import glob
+
 from dash import Dash, html, dcc, callback, Input, Output
 import dash_bootstrap_components as dbc
 from components.NavbarVertical import sidebar  # Importamos el sidebar desde NavbarVertical
@@ -8,9 +16,22 @@ from page.leage_players_page import leage_players
 from page.players_page import players_page_content
 from page.about import about_page_content
 
+ROOT_FOLDER = os.path.abspath(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), os.pardir))
+SRC_FOLDER = os.path.join(ROOT_FOLDER, "src/")
+ASSETS_FOLDER = os.path.join(SRC_FOLDER, "assets")
+
+external_style_sheet = glob.glob(os.path.join(
+    ASSETS_FOLDER, "bootstrap/css") + "/*.css")
+external_style_sheet += glob.glob(os.path.join(ASSETS_FOLDER,
+                                  "css") + "/*.css")
+external_style_sheet += glob.glob(os.path.join(ASSETS_FOLDER,
+                                  "fonts") + "/*.css")
+
+
 # Inicializamos la aplicación
 app = Dash(__name__,title="Basket Analitics",
-            external_stylesheets=[dbc.themes.BOOTSTRAP],
+            external_stylesheets=[dbc.themes.BOOTSTRAP] + external_style_sheet,
             suppress_callback_exceptions=True)
 
 server = app.server

@@ -5,8 +5,8 @@ sidebar = html.Div(
     [
         html.Div(
             [
-                html.Img(src="./assets/images/ic_world_cup.png", style={"width": "3rem"}),
-                html.H4("Basketball Stadistics", className="m-0"),
+                html.Img(src="./assets/images/federacion_baloncesto.png", style={"width": "3rem"}),
+                html.H4("WorldCup", className="m-0"),
             ],
             className="sidebar-header",
         ),
@@ -14,10 +14,7 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink(
-                    [
-                        html.I(className="tf-icons bx bx-trophy fas fa-home"), 
-                        html.Span("Leage Players" , className="me-2")
-                    ],
+                    [html.I(className="tf-icons bx bx-trophy fas fa-home"), html.Span("Leage Results" , className="me-2")],
                     href="/",
                     active="exact",
                     className="pe-3"
