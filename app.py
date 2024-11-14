@@ -15,6 +15,7 @@ from components.Footer import Footer
 from page.leage_players_page import leage_players
 from page.players_page import players_page_content
 from page.about import about_page_content
+from page.scatter import scatter
 
 ROOT_FOLDER = os.path.abspath(os.path.join(
     os.path.dirname(os.path.abspath(__file__)), os.pardir))
@@ -84,6 +85,8 @@ def routing(path):
         return players_page_content
     elif path == "/about":
         return about_page_content
+    elif path == "/scatter":
+        return scatter
     else:
         return html.H2("404"), html.P("Página no encontrada.")
 
