@@ -1,11 +1,7 @@
-from dash import Dash, html, dcc, callback, Output, Input, dash_table
+from dash import html, dcc, callback, Output, Input
 import dash_bootstrap_components as dbc
-import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-from math import pi
-#import utils.theme as theme
-import dash_loading_spinners as dls
 
 # Cargar datos
 df = pd.read_excel("jugadores.xlsx")

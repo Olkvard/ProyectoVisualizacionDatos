@@ -1,8 +1,10 @@
-from dash import  dcc
+from dash import dcc, html, Input, Output, callback
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
+from components.Card_TCP2_Top import AverageCard  # Importa el componente de la tarjeta
 
+# Leer los datos del dataset
 df = pd.read_excel("jugadores.xlsx")
 
 # Crear columnas de ataque y defensa
@@ -13,13 +15,63 @@ df["Defensa"] = ((df["Recuperaciones"] + df["Rebotes Defensivos"] + df["Tapones 
 df["Ataque"] = df["Ataque"].clip(0, 1)
 df["Defensa"] = df["Defensa"].clip(0, 1)
 
+# Calcular el PER Aproximado
 df['PER Aproximado'] = (df["TCP1 (%)"] + df["TCP2 (%)"] + df["TCP3 (%)"] + df["Ataque"] + df["Defensa"]) / 5
 
-top_10_jugadores = df.nlargest(10, 'PER Aproximado').sort_values(by='PER Aproximado', ascending=True)
+# Ordena el DataFrame por PER Aproximado en orden descendente
+df = df.sort_values(by='PER Aproximado', ascending=False).reset_index(drop=True)
 
+# Define los colores de la paleta viridis
+viridis_colors = ["#440154", "#482878", "#3e4a89", "#31688e", "#26828e", "#1f9e89", "#35b779", "#6ece58", "#b8de29", "#fde725"]
+
+# Layout del Dashboard
 leage_players = dbc.Container([
-    dcc.Graph(figure=px.bar(top_10_jugadores, y='Nombre', x='PER Aproximado', title="PER Aproximado de los Jugadores de Baloncesto",
-                            labels={'PER Aproximado': 'PER Aproximado', 'Nombre': 'Jugador'},
-                            color='PER Aproximado', color_continuous_scale='greens', orientation="h")),
 
-],style={"padding-top": "3rem"})
+    # Contenedor de la tarjeta de promedio
+    html.Div(id='tcp2-average-container'),
+
+    # Dropdown para seleccionar el rango de jugadores
+    dbc.Row([
+        dbc.Col(
+            dcc.Dropdown(
+                id='dropdown-top-n',
+                options=[{'label': f'Top {i-9} - {i}', 'value': i} for i in range(10, len(df)+10, 10)],
+                value=10,
+                clearable=False,
+                style={"width": "50%", "margin-top": "1rem"}
+            ), width=12)
+    ], style={"margin-bottom": "1rem"}),
+
+    # Gráfico que se actualizará dinámicamente
+    dcc.Graph(id='graph-top-players'),
+], style={"padding-top": "3rem"})
+
+
+# Callback para actualizar el gráfico y la tarjeta de promedio según el valor del Dropdown
+@callback(
+    [Output('graph-top-players', 'figure'),
+     Output('tcp2-average-container', 'children')],  # Actualiza el contenedor en lugar de la tarjeta directamente
+    [Input('dropdown-top-n', 'value')]
+)
+def update_graph_and_label(top_n):
+    # Calcular los índices de inicio y fin del rango
+    start_idx = top_n - 10
+    end_idx = min(top_n, len(df))  # Limitar el índice final al total de jugadores
+    
+    # Filtrar los datos para obtener solo los jugadores en el rango seleccionado y ordenar en ascendente
+    top_players = df.iloc[start_idx:end_idx].sort_values(by='PER Aproximado', ascending=True)
+    
+    # Crear el gráfico de barras actualizado
+    fig = px.bar(
+        top_players,
+        y='Nombre',
+        x='PER Aproximado',
+        title=f"Jugadores {start_idx + 1} a {end_idx} por PER Aproximado (Orden Invertido)",
+        labels={'PER Aproximado': 'PER Aproximado', 'Nombre': 'Jugador'},
+        color='PER Aproximado',
+        color_discrete_sequence=viridis_colors,
+        orientation="h"
+    )
+
+    # Usar el componente AverageCard pasando los jugadores seleccionados
+    return fig, AverageCard(top_players)
