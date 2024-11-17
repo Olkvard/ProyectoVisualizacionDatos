@@ -2,7 +2,10 @@ from dash import dcc, html, Input, Output, callback
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
-from components.Card_TCP2_Top import AverageCard  # Importa el componente de la tarjeta
+from components.card_TC_average_Top import AverageCardTC
+from components.card_TC1_average_Top import AverageCardTC1
+from components.card_ataque_Top import CardAtaque
+from components.card_defensa_Top import CardDefensa
 
 # Leer los datos del dataset
 df = pd.read_excel("jugadores.xlsx")
@@ -26,9 +29,13 @@ viridis_colors = ["#440154", "#482878", "#3e4a89", "#31688e", "#26828e", "#1f9e8
 
 # Layout del Dashboard
 leage_players = dbc.Container([
-
-    # Contenedor de la tarjeta de promedio
-    html.Div(id='tcp2-average-container'),
+    # Contenedor para ambas tarjetas
+    dbc.Row([
+        dbc.Col(id='tc-average-container', width="auto"),
+        dbc.Col(id='tc1-average-container', width="auto"),
+        dbc.Col(id='ataque-container', width="auto"),
+        dbc.Col(id='defensa-container', width="auto")
+    ], style={"margin-bottom": "1rem"}),
 
     # Dropdown para seleccionar el rango de jugadores
     dbc.Row([
@@ -50,7 +57,10 @@ leage_players = dbc.Container([
 # Callback para actualizar el gráfico y la tarjeta de promedio según el valor del Dropdown
 @callback(
     [Output('graph-top-players', 'figure'),
-     Output('tcp2-average-container', 'children')],  # Actualiza el contenedor en lugar de la tarjeta directamente
+     Output('tc-average-container', 'children'),
+     Output('tc1-average-container', 'children'),
+     Output('ataque-container', 'children'),
+     Output('defensa-container', 'children')],  # Actualiza el contenedor en lugar de la tarjeta directamente
     [Input('dropdown-top-n', 'value')]
 )
 def update_graph_and_label(top_n):
@@ -74,4 +84,4 @@ def update_graph_and_label(top_n):
     )
 
     # Usar el componente AverageCard pasando los jugadores seleccionados
-    return fig, AverageCard(top_players)
+    return fig, AverageCardTC(top_players), AverageCardTC1(top_players), CardAtaque(top_players), CardDefensa(top_players)
