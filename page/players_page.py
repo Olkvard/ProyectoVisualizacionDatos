@@ -16,13 +16,13 @@ df["Defensa"] = df["Defensa"].clip(0, 1)
 
 df['PER Aproximado'] = (df["TCP1 (%)"] + df["TCP2 (%)"] + df["TCP3 (%)"] + df["Ataque"] + df["Defensa"]) / 5
 
+# Paleta de colores accesibles
+COLORS = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']  # Azul, naranja, verde, rojo, púrpura
+
 
 def radar_chart(player_names, category_labels=None):
     categories = ['TCP2 (%)', 'TCP3 (%)', 'TCP1 (%)', 'Ataque', 'Defensa']
     fig = go.Figure()
-
-    # Colores para los jugadores
-    colors = ['blue', 'red']
 
     # Generar los datos para cada jugador
     for i, player_name in enumerate(player_names):
@@ -41,15 +41,15 @@ def radar_chart(player_names, category_labels=None):
             theta=category_labels,
             fill='toself',
             name=player_name,
-            marker=dict(color=colors[i % len(colors)]),
-            opacity=0.6
+            marker=dict(color=COLORS[i % len(COLORS)]),  # Usar colores accesibles
+            opacity=0.6  # Transparencia para el relleno
         ))
 
     # Configuración del diseño del gráfico
     fig.update_layout(
         polar=dict(
             radialaxis=dict(
-                visible=False, range=[0, 1]
+                visible=True, range=[0, 1]
             )
         ),
         showlegend=True,
@@ -58,17 +58,19 @@ def radar_chart(player_names, category_labels=None):
 
     return fig
 
+
 # Layout de la app
-players_page_content =dbc.Container([
+players_page_content = dbc.Container([
     html.H1("Gráfica de jugadores"),
     dcc.Dropdown(
-        id='player-dropdown', 
+        id='player-dropdown',
         options=[{'label': name, 'value': name} for name in df['Nombre'].unique()],
         multi=True,
-        placeholder="Selecciona uno o dos jugadores"
+        placeholder="Selecciona hasta 5 jugadores"
     ),
     dcc.Graph(id="radar-chart"),
 ], style={"padding-top": "40px"})
+
 
 # Callback para actualizar el gráfico de radar
 @callback(
@@ -77,5 +79,11 @@ players_page_content =dbc.Container([
 )
 def update_radar_chart(player_name):
     if player_name:
+        # Validar el límite de selección de jugadores
+        if len(player_name) > 5:
+            player_name = player_name[:5]  # Limitar a los primeros 5 jugadores
+            print("Has seleccionado más de 5 jugadores. Solo los primeros 5 se incluirán en el gráfico.")
+
         return radar_chart(player_name, category_labels=['Tiros de 2', 'Tiros de 3', 'Tiros Libres', 'Ataque', 'Defensa'])
+
     return go.Figure()
