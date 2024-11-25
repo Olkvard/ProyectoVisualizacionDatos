@@ -1,69 +1,91 @@
-# app.py
-
+# Importación de módulos del sistema para configuración de rutas
 import sys
 import os
+
+# Configuración del path del módulo actual para facilitar la importación de componentes
 module_path = os.path.abspath(os.path.join(
     os.path.dirname(os.path.abspath(__file__))))
 if module_path not in sys.path:
-    sys.path.append(module_path)
+    sys.path.append(module_path)  # Añadimos el directorio actual al path del sistema
+
+# Importación de glob para buscar archivos según patrones específicos
 import glob
 
+# Importación de Dash y componentes adicionales
 from dash import Dash, html, dcc, callback, Input, Output
-import dash_bootstrap_components as dbc
-from components.NavbarVertical import sidebar  # Importamos el sidebar desde NavbarVertical
-from components.Footer import Footer
-from page.leage_players_page import leage_players
-from page.players_page import players_page_content
-from page.about import about_page_content
-from page.scatter import scatter
+import dash_bootstrap_components as dbc  # Componentes Bootstrap para diseño estilizado
 
+# Importación de componentes personalizados
+from components.NavbarVertical import sidebar  # Menú lateral de navegación (Sidebar)
+from components.Footer import Footer  # Pie de página (Footer)
+from page.leage_players_page import leage_players  # Página principal con análisis de jugadores
+from page.players_page import players_page_content  # Página para análisis individual de jugadores
+from page.about import about_page_content  # Página "Acerca de"
+from page.scatter import scatter  # Página de gráfico de dispersión
+
+# --- Configuración de rutas principales ---
+
+# Ruta raíz de la aplicación
 ROOT_FOLDER = os.path.abspath(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), os.pardir))
-SRC_FOLDER = os.path.join(ROOT_FOLDER, "src/")
-ASSETS_FOLDER = os.path.join(SRC_FOLDER, "assets")
+    os.path.dirname(os.path.abspath(__file__)), os.pardir))  # Calculamos la carpeta raíz
+SRC_FOLDER = os.path.join(ROOT_FOLDER, "src/")  # Carpeta fuente
+ASSETS_FOLDER = os.path.join(SRC_FOLDER, "assets")  # Carpeta de recursos (estilos, imágenes, etc.)
 
+# --- Carga de estilos externos (CSS) ---
+
+# Buscamos archivos CSS en la carpeta de assets
 external_style_sheet = glob.glob(os.path.join(
-    ASSETS_FOLDER, "bootstrap/css") + "/*.css")
-external_style_sheet += glob.glob(os.path.join(ASSETS_FOLDER,
-                                  "css") + "/*.css")
-external_style_sheet += glob.glob(os.path.join(ASSETS_FOLDER,
-                                  "fonts") + "/*.css")
+    ASSETS_FOLDER, "bootstrap/css") + "/*.css")  # Archivos CSS de Bootstrap
+external_style_sheet += glob.glob(os.path.join(ASSETS_FOLDER, "css") + "/*.css")  # Archivos CSS personalizados
+external_style_sheet += glob.glob(os.path.join(ASSETS_FOLDER, "fonts") + "/*.css")  # Archivos CSS para fuentes personalizadas
 
+# --- Inicialización de la aplicación Dash ---
 
-# Inicializamos la aplicación
-app = Dash(__name__,title="Basket Analitics",
-            external_stylesheets=[dbc.themes.BOOTSTRAP] + external_style_sheet,
-            suppress_callback_exceptions=True)
+app = Dash(
+    __name__,  # Nombre de la aplicación
+    title="Basket Analytics",  # Título que aparecerá en la pestaña del navegador
+    external_stylesheets=[dbc.themes.BOOTSTRAP] + external_style_sheet,  # Añadimos los estilos externos
+    suppress_callback_exceptions=True  # Permitir callbacks dinámicos (no definidos al inicio)
+)
 
+# Servidor necesario para desplegar la aplicación en plataformas como Heroku
 server = app.server
 
-# Definimos el layout de la aplicación
-app.layout = html.Div(
-    className="layout-wrapper layout-content-navbar",
+# --- Definición del layout principal de la aplicación ---
+
+app.layout = html.Div(  # Contenedor principal de la aplicación
+    className="layout-wrapper layout-content-navbar",  # Clase CSS para estructura general del diseño
     children=[
-        html.Div(
-            className="layout-container",
+        html.Div(  # Contenedor para todo el layout
+            className="layout-container",  # Clase CSS para estilos
             children=[
-                dcc.Location(id="url"),
+                # Componente para manejar rutas dinámicas (URLs)
+                dcc.Location(id="url"),  
+                
+                # Menú lateral (Sidebar)
                 html.Aside(
-                    className="",
-                    children=[sidebar]
+                    className="",  # Clase CSS (vacía para usar estilos predeterminados)
+                    children=[sidebar]  # Importamos el componente Sidebar
                 ),
+                
+                # Contenedor principal de la página
                 html.Div(
-                    className="layout-page",
+                    className="layout-page",  # Clase CSS para estructura de la página
                     children=[
-                        html.Div(
-                            className="content-wrapper",
+                        html.Div(  # Contenedor para el contenido principal
+                            className="content-wrapper",  # Clase CSS para el contenido
                             children=[
-                                html.Div(
-                                    className="container-xxl flex-grow-1 container-p-y p-0",
-                                    id="page-content",
-                                    children=[]
+                                html.Div(  # Contenedor para el contenido dinámico
+                                    className="container-xxl flex-grow-1 container-p-y p-0",  # Clase CSS para estilos
+                                    id="page-content",  # ID donde se cargará el contenido dinámico
+                                    children=[]  # Inicialmente vacío
                                 ),
+                                
+                                # Pie de página
                                 html.Footer(
-                                    className="content-footer footer bg-footer-theme",
-                                    children=[Footer],
-                                    style={"margin-left": "6rem"}
+                                    className="content-footer footer bg-footer-theme",  # Clase CSS para estilos
+                                    children=[Footer],  # Componente Footer importado
+                                    style={"margin-left": "6rem"}  # Estilo personalizado
                                 )
                             ]
                         )
@@ -74,41 +96,29 @@ app.layout = html.Div(
     ]
 )
 
+# --- Callback para manejar el enrutamiento dinámico ---
+
 @callback(
-    Output(component_id='page-content', component_property='children'),
-    Input(component_id='url', component_property='pathname')
+    Output(component_id='page-content', component_property='children'),  # Salida: Contenedor dinámico
+    Input(component_id='url', component_property='pathname')  # Entrada: Cambios en la URL
 )
 def routing(path):
-    if path == "/":
-        return leage_players
-    elif path == "/players":
+    """
+    Función de enrutamiento que devuelve el contenido dinámico de la página 
+    basado en la ruta actual de la URL.
+    """
+    if path == "/":  # Ruta principal
+        return leage_players  # Cargar contenido de jugadores por liga
+    elif path == "/players":  # Ruta para análisis individual de jugadores
         return players_page_content
-    elif path == "/about":
+    elif path == "/about":  # Ruta "Acerca de"
         return about_page_content
-    elif path == "/scatter":
+    elif path == "/scatter":  # Ruta para el gráfico de dispersión
         return scatter
-    else:
-        return html.H2("404"), html.P("Página no encontrada.")
+    else:  # Ruta no encontrada
+        return html.H2("404"), html.P("Página no encontrada.")  # Mensaje de error 404
 
-# Callback para actualizar el contenido según la pagina seleccionada
-#@callback(
-#    Output("page-content", "children"),
-#    Input("url", "pathname")
-#)
-# Funcion de cambio de pagina 
-#def display_page(pathname):
-#    if pathname == "/":
-#        return html.H2("League Players"), html.P("Esta es la página de torneos.")
-#    elif pathname == "/players":
-#        return players_page_content  # Llama al contenido de la página de Players
-#    elif pathname == "/about":
-#        return html.H2("About"), html.P("Esta es la página de información.")
-#    else:
-#        return html.H2("404"), html.P("Página no encontrada.")
+# --- Ejecución de la aplicación ---
 
-# Componente dcc.Location para rastrear la URL actual
-#app.layout.children.insert(0, dcc.Location(id="url"))
-
-# Ejecutamos la aplicación
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True)  # Ejecutar la app en modo debug para desarrollo
