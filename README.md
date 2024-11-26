@@ -45,12 +45,12 @@ pip install -r requirements.txt
 Para ejecutar la aplicación, usa el siguiente comando:
 
 ```bash
-python nombre-del-archivo.py
+python app.py
 ```
 Luego abre tu navegador en http://127.0.0.1:8050 para ver el dashboard.
 
 ## Estructura del Código 📂
-- `ejercicios.py`: Script principal para ejecutar el dashboard.
+- `app.py`: Script principal para ejecutar el dashboard.
 - `jugadores.xlsx`: Archivo de datos con las estadísticas de los jugadores.
 - `requirements.txt`: Archivo con las dependencias necesarias.
 
